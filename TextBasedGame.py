@@ -9,12 +9,45 @@ in the Throne Room.
 """
 
 
+RIDDLE_DOORS = {
+    frozenset(('Armory', 'Secret Chamber')): {
+        'question': 'What has keys but no locks, and an Enter but no exit?',
+        'answers': ('keyboard', 'a keyboard')
+    },
+    frozenset(('Library', 'Alchemy Lab')): {
+        'question': 'What gets wetter and wetter the more it dries?',
+        'answers': ('towel', 'a towel')
+    },
+    frozenset(('Entrance', 'Dungeon')): {
+        'question': 'Remove two letters from the word "five" to make "four." '
+                    'What are the letters?',
+        'answers': ('iv',)
+    },
+    frozenset(('Entrance', 'Armory')): {
+        'question': (
+            "I am black when you buy me, red when you use me, and white when "
+            "you know it is time to throw me away. What am I?"
+        ),
+        'answers': ('charcoal',)
+    },
+    frozenset(('Library', 'Observatory')): {
+        'question': 'Spell Candy with 2 letters.',
+        'answers': ('c and y',)
+    },
+    frozenset(('Garden', 'Observatory')): {
+        'question': 'What is a 3 letter word that starts with gas?',
+        'answers': ('car',)
+    }
+}
+
+
 # Display available commands to the player
 def show_instructions():
     print("\n========= THE ARCANE TOWER =========")
     print("Commands:")
     print("  go [direction]  - Move North, South, East, or West")
     print("  get [item]      - Pick up an item in the current room")
+    print("  answer [riddle] - Answer a riddle (or type it directly)")
     print("  status          - Show current room, inventory, and visible item")
     print("  help            - Show this help message")
     print("  exit            - Quit the game")
@@ -42,29 +75,40 @@ def show_status(current_room, inventory, room_items, room_descriptions, required
 
 
 # Move the player in the given direction if possible
-def move_player(current_room, direction, rooms, inventory):
+def move_player(current_room, direction, rooms, inventory, unlocked_riddle_doors=None):
     direction = direction.strip().capitalize()
 
     if direction not in ('North', 'South', 'East', 'West'):
         print("\n*** Invalid direction ***")
         print("Please enter North, South, East, or West.")
-        return current_room, False
+        return current_room, False, None
 
     new_room = rooms[current_room].get(direction)
 
     if new_room is None:
         print("\n*** You cannot go that way ***")
-        return current_room, False
+        return current_room, False, None
 
     # Silver Key Puzzle: Unlock Throne Room from Dungeon
     if current_room == 'Dungeon' and new_room == 'Throne Room':
-        if 'Silver Key' not in inventory:
+        # Case-insensitive check for the Silver Key
+        if not any(item.lower() == 'silver key' for item in inventory):
             print("\n*** The heavy iron door to the Throne Room is locked! ***")
             print("You need a Silver Key to unlock it.")
-            return current_room, False
+            return current_room, False, None
+
+    door = frozenset((current_room, new_room))
+    if (
+        door in RIDDLE_DOORS
+        and (unlocked_riddle_doors is None or door not in unlocked_riddle_doors)
+    ):
+        print(f"\n*** A rune-covered door bars the way to the {new_room}. ***")
+        print(f"Riddle: {RIDDLE_DOORS[door]['question']}")
+        print("Type your answer.")
+        return current_room, False, door
 
     print(f"\nYou moved {direction} to: {new_room}")
-    return new_room, True
+    return new_room, True, None
 
 
 # Pick up an item from the current room and update inventory
@@ -84,6 +128,7 @@ def get_item(current_room, item_name, inventory, room_items):
         print(f"\nYou already have the {expected_item}.")
         return inventory
 
+    # Ensure we store the item exactly as defined in room_items for consistency
     inventory.append(expected_item)
     room_items[current_room] = None
     print(f"\nYou picked up the {expected_item}!")
@@ -173,6 +218,8 @@ def main():
     # Player state
     current_room = 'Entrance'
     inventory = []
+    pending_riddle_door = None
+    unlocked_riddle_doors = set()
 
     print("=" * 50)
     print("  THE ARCANE TOWER ADVENTURE")
@@ -209,16 +256,61 @@ def main():
         elif cmd_lower == 'status':
             show_status(current_room, inventory, room_items, room_descriptions, required_artifacts)
 
+        # Answer the riddle guarding the currently attempted door
+        elif (
+            cmd_lower == 'answer'
+            or cmd_lower.startswith('answer ')
+            or (
+                pending_riddle_door is not None
+                and cmd_lower not in ('exit', 'help', 'status', 'go', 'get')
+                and not cmd_lower.startswith(('go ', 'get '))
+            )
+        ):
+            if cmd_lower == 'answer':
+                print("\n*** Please specify an answer (e.g., 'answer keyboard') ***")
+                continue
+
+            answer = (
+                command.split(maxsplit=1)[1].strip()
+                if cmd_lower.startswith('answer ')
+                else command
+            )
+            if pending_riddle_door is None:
+                print("\n*** There is no riddle awaiting an answer. ***")
+            elif answer.lower() in RIDDLE_DOORS[pending_riddle_door]['answers']:
+                door = pending_riddle_door
+                unlocked_riddle_doors.add(door)
+                target_room = next(iter(door - {current_room}))
+                door_direction = next(
+                    direction
+                    for direction, room in rooms[current_room].items()
+                    if room == target_room
+                )
+                pending_riddle_door = None
+                print(
+                    "\nThe runes glow brightly, and the door to "
+                    f"the {target_room} unlocks!"
+                )
+                print(f"Go {door_direction} to enter.")
+            else:
+                print("\nThat answer is incorrect. The door remains locked.")
+
         # Move between rooms
-        elif cmd_lower.startswith('go '):
+        elif cmd_lower == 'go' or cmd_lower.startswith('go '):
             parts = command.split(maxsplit=1)
             if len(parts) < 2:
                 print("\n*** Please specify a direction (e.g., 'go North') ***")
                 continue
             direction = parts[1]
-            current_room, moved = move_player(current_room, direction, rooms, inventory)
 
-            if moved:
+            current_room, moved, pending_door = move_player(
+                current_room, direction, rooms, inventory, unlocked_riddle_doors
+            )
+
+            if pending_door:
+                pending_riddle_door = pending_door
+            elif moved:
+                pending_riddle_door = None
                 show_status(current_room, inventory, room_items, room_descriptions, required_artifacts)
 
                 # Check for villain encounter after moving
@@ -243,7 +335,7 @@ def main():
                         running = False
 
         # Pick up an item
-        elif cmd_lower.startswith('get '):
+        elif cmd_lower == 'get' or cmd_lower.startswith('get '):
             parts = command.split(maxsplit=1)
             if len(parts) < 2:
                 print("\n*** Please specify an item to get (e.g., 'get Silver Key') ***")
