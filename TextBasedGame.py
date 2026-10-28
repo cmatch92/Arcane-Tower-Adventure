@@ -22,9 +22,10 @@ def show_instructions():
 
 
 # Display the player's current room, inventory, and visible item
-def show_status(current_room, inventory, room_items):
+def show_status(current_room, inventory, room_items, room_descriptions):
     print("\n---------------------------")
     print(f"You are in the {current_room}")
+    print(f"Description: {room_descriptions[current_room]}")
     print(f"Inventory: {inventory}")
     if room_items[current_room] is not None:
         print(f"Visible item: {room_items[current_room]}")
@@ -129,6 +130,19 @@ def main():
         'Throne Room': None
     }
 
+    # Descriptions shown whenever the player views a room
+    room_descriptions = {
+        'Entrance': 'A tall vaulted hall, lit by a faint blue glow, welcomes you into the tower.',
+        'Library': 'Dusty shelves rise to the ceiling, packed with books that whisper softly.',
+        'Alchemy Lab': 'Bubbling glass vessels cast strange colors across the cluttered worktables.',
+        'Observatory': 'A brass telescope points through the open dome toward a sky full of stars.',
+        'Garden': 'Silver leaves shimmer among winding paths and luminous flowers.',
+        'Armory': 'Old suits of armor stand watch beside racks of finely crafted weapons.',
+        'Dungeon': 'Cold stone walls close in around rusted bars and a damp, shadowy floor.',
+        'Secret Chamber': 'A hidden room glimmers with ancient runes etched into its walls.',
+        'Throne Room': 'A black stone throne looms beneath banners darkened by sorcery.'
+    }
+
     # Total number of collectible items
     total_items = 7
 
@@ -146,7 +160,7 @@ def main():
     print("Malachar in the Throne Room.\n")
 
     show_instructions()
-    show_status(current_room, inventory, room_items)
+    show_status(current_room, inventory, room_items, room_descriptions)
 
     # Main gameplay loop
     while current_room != 'exit':
@@ -162,7 +176,7 @@ def main():
 
         # Show player status
         elif command == 'status':
-            show_status(current_room, inventory, room_items)
+            show_status(current_room, inventory, room_items, room_descriptions)
 
         # Move between rooms
         elif len(command.split()) >= 2 and command.split()[0] == 'go':
@@ -170,6 +184,8 @@ def main():
             current_room, moved = move_player(current_room, direction, rooms)
 
             if moved:
+                show_status(current_room, inventory, room_items, room_descriptions)
+
                 # Check for villain encounter after moving
                 if current_room == 'Throne Room':
                     if len(inventory) == total_items:
@@ -187,14 +203,12 @@ def main():
                         print("are no match for Malachar's forbidden magic.")
                         print("\n*** GAME OVER. You have been defeated. ***")
                         current_room = 'exit'
-                else:
-                    show_status(current_room, inventory, room_items)
 
         # Pick up an item
         elif len(command.split()) >= 2 and command.split()[0].lower() == 'get':
             item_name = command[4:].strip()
             inventory = get_item(current_room, item_name, inventory, room_items)
-            show_status(current_room, inventory, room_items)
+            show_status(current_room, inventory, room_items, room_descriptions)
 
         # Invalid command
         else:
