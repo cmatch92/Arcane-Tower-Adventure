@@ -22,19 +22,28 @@ def show_instructions():
 
 
 # Display the player's current room, inventory, and visible item
-def show_status(current_room, inventory, room_items, room_descriptions):
+def show_status(current_room, inventory, room_items, room_descriptions, required_artifacts):
     print("\n---------------------------")
     print(f"You are in the {current_room}")
     print(f"Description: {room_descriptions[current_room]}")
-    print(f"Inventory: {inventory}")
+
+    if not inventory:
+        print("Inventory: Your pack is empty.")
+    else:
+        # List artifacts clearly
+        items_list = ", ".join(inventory)
+        print(f"Inventory: {items_list}")
+
+    print(f"Artifacts collected: {len(inventory)} / {len(required_artifacts)}")
+
     if room_items[current_room] is not None:
         print(f"Visible item: {room_items[current_room]}")
     print("---------------------------\n")
 
 
 # Move the player in the given direction if possible
-def move_player(current_room, direction, rooms):
-    direction = direction.capitalize()
+def move_player(current_room, direction, rooms, inventory):
+    direction = direction.strip().capitalize()
 
     if direction not in ('North', 'South', 'East', 'West'):
         print("\n*** Invalid direction ***")
@@ -46,6 +55,13 @@ def move_player(current_room, direction, rooms):
     if new_room is None:
         print("\n*** You cannot go that way ***")
         return current_room, False
+
+    # Silver Key Puzzle: Unlock Throne Room from Dungeon
+    if current_room == 'Dungeon' and new_room == 'Throne Room':
+        if 'Silver Key' not in inventory:
+            print("\n*** The heavy iron door to the Throne Room is locked! ***")
+            print("You need a Silver Key to unlock it.")
+            return current_room, False
 
     print(f"\nYou moved {direction} to: {new_room}")
     return new_room, True
@@ -143,8 +159,16 @@ def main():
         'Throne Room': 'A black stone throne looms beneath banners darkened by sorcery.'
     }
 
-    # Total number of collectible items
-    total_items = 7
+    # Explicitly define required artifacts
+    required_artifacts = [
+        'Ancient Spellbook',
+        'Magic Potion',
+        'Star Chart',
+        'Enchanted Flower',
+        'Crystal Sword',
+        'Silver Key',
+        'Mystic Amulet'
+    ]
 
     # Player state
     current_room = 'Entrance'
@@ -156,59 +180,77 @@ def main():
     print("You are a young wizard apprentice entering the")
     print("prestigious Arcane Tower, only to discover the")
     print("evil sorcerer Malachar has seized control!")
-    print("Collect all 7 legendary artifacts before facing")
+    print(f"Collect all {len(required_artifacts)} legendary artifacts before facing")
     print("Malachar in the Throne Room.\n")
 
     show_instructions()
-    show_status(current_room, inventory, room_items, room_descriptions)
+    show_status(current_room, inventory, room_items, room_descriptions, required_artifacts)
 
     # Main gameplay loop
-    while current_room != 'exit':
-        command = input("Enter command: ").strip()
+    running = True
+    while running:
+        try:
+            command = input("Enter command: ").strip()
+        except EOFError:
+            break
+
+        # Case-insensitive command handling
+        cmd_lower = command.lower()
 
         # Exit the game
-        if command == 'exit':
-            current_room = 'exit'
+        if cmd_lower == 'exit':
+            running = False
 
         # Show instructions
-        elif command == 'help':
+        elif cmd_lower == 'help':
             show_instructions()
 
         # Show player status
-        elif command == 'status':
-            show_status(current_room, inventory, room_items, room_descriptions)
+        elif cmd_lower == 'status':
+            show_status(current_room, inventory, room_items, room_descriptions, required_artifacts)
 
         # Move between rooms
-        elif len(command.split()) >= 2 and command.split()[0] == 'go':
-            direction = command.split()[1]
-            current_room, moved = move_player(current_room, direction, rooms)
+        elif cmd_lower.startswith('go '):
+            parts = command.split(maxsplit=1)
+            if len(parts) < 2:
+                print("\n*** Please specify a direction (e.g., 'go North') ***")
+                continue
+            direction = parts[1]
+            current_room, moved = move_player(current_room, direction, rooms, inventory)
 
             if moved:
-                show_status(current_room, inventory, room_items, room_descriptions)
+                show_status(current_room, inventory, room_items, room_descriptions, required_artifacts)
 
                 # Check for villain encounter after moving
                 if current_room == 'Throne Room':
-                    if len(inventory) == total_items:
+                    # Victory condition: check if player has all required artifacts
+                    has_all = all(item in inventory for item in required_artifacts)
+                    if has_all:
                         print("\n*** YOU CONFRONT MALACHAR ***")
                         print("Wielding all seven legendary artifacts, you")
                         print("unleash a blinding burst of arcane power!")
                         print("Malachar is defeated and the tower is freed!")
                         print("\n*** CONGRATULATIONS! YOU WIN! ***")
-                        current_room = 'exit'
+                        running = False
                     else:
-                        missing = total_items - len(inventory)
+                        # Calculate missing artifacts
+                        missing_items = [item for item in required_artifacts if item not in inventory]
                         print(f"\n*** MALACHAR THE DARK SORCERER STANDS BEFORE YOU ***")
-                        print(f"You are missing {missing} artifact(s)!")
+                        print(f"You are missing {len(missing_items)} artifact(s)!")
                         print("Without the full power of the artifacts, you")
                         print("are no match for Malachar's forbidden magic.")
                         print("\n*** GAME OVER. You have been defeated. ***")
-                        current_room = 'exit'
+                        running = False
 
         # Pick up an item
-        elif len(command.split()) >= 2 and command.split()[0].lower() == 'get':
-            item_name = command[4:].strip()
+        elif cmd_lower.startswith('get '):
+            parts = command.split(maxsplit=1)
+            if len(parts) < 2:
+                print("\n*** Please specify an item to get (e.g., 'get Silver Key') ***")
+                continue
+            item_name = parts[1]
             inventory = get_item(current_room, item_name, inventory, room_items)
-            show_status(current_room, inventory, room_items, room_descriptions)
+            show_status(current_room, inventory, room_items, room_descriptions, required_artifacts)
 
         # Invalid command
         else:

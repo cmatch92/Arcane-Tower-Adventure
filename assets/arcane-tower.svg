@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" role="img" aria-labelledby="title description">
+  <title id="title">The Arcane Tower</title>
+  <desc id="description">A glowing fantasy tower stands beneath a starry violet sky.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111a3b"/>
+      <stop offset="0.55" stop-color="#35265d"/>
+      <stop offset="1" stop-color="#17152d"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#9584c9"/>
+      <stop offset="1" stop-color="#504575"/>
+    </linearGradient>
+    <linearGradient id="window" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff5b0"/>
+      <stop offset="1" stop-color="#f2a953"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="420" rx="24" fill="url(#sky)"/>
+  <circle cx="934" cy="92" r="42" fill="#f3e7c2" opacity="0.9"/>
+  <circle cx="951" cy="79" r="42" fill="#29234d"/>
+  <g fill="#fff3c4">
+    <circle cx="127" cy="74" r="3"/><circle cx="248" cy="128" r="2"/>
+    <circle cx="356" cy="61" r="3"/><circle cx="484" cy="111" r="2"/>
+    <circle cx="1080" cy="164" r="3"/><circle cx="801" cy="62" r="2"/>
+    <circle cx="689" cy="131" r="3"/><circle cx="103" cy="196" r="2"/>
+    <circle cx="1115" cy="59" r="2"/><circle cx="761" cy="191" r="2"/>
+  </g>
+  <g fill="#d9b8ff" opacity="0.9">
+    <path d="M194 87l5 12 12 5-12 5-5 12-5-12-12-5 12-5z"/>
+    <path d="M1056 225l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/>
+    <path d="M581 69l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/>
+  </g>
+  <path d="M0 338 Q170 273 335 337 T670 330 T1000 319 T1200 332 V420 H0Z" fill="#252342"/>
+  <path d="M0 370 Q185 327 366 374 T730 361 T1200 367 V420 H0Z" fill="#17182f"/>
+  <g stroke="#c7a8ff" stroke-width="3" opacity="0.65" fill="none">
+    <path d="M429 328 Q600 283 771 328"/>
+    <path d="M465 328 Q600 295 735 328"/>
+  </g>
+  <g>
+    <path d="M504 331V179L546 145V331Z" fill="url(#stone)" stroke="#c4a8f4" stroke-width="3"/>
+    <path d="M546 331V119L600 77L654 119V331Z" fill="url(#stone)" stroke="#d7c1ff" stroke-width="4"/>
+    <path d="M654 331V165L694 136V331Z" fill="#76679e" stroke="#c4a8f4" stroke-width="3"/>
+    <path d="M530 154L546 115L562 154Z" fill="#d8c5ff"/>
+    <path d="M578 123L600 48L622 123Z" fill="#e2d2ff"/>
+    <path d="M679 145L694 105L709 145Z" fill="#d8c5ff"/>
+    <path d="M520 179H555M546 149H654M600 83V331M654 167H694" stroke="#e4d7ff" stroke-width="3" opacity="0.55"/>
+    <g fill="url(#window)" filter="url(#glow)">
+      <path d="M586 139Q600 119 614 139V164H586Z"/>
+      <path d="M586 196Q600 176 614 196V221H586Z"/>
+      <path d="M586 253Q600 233 614 253V278H586Z"/>
+      <path d="M523 218Q535 201 547 218V241H523Z"/>
+      <path d="M660 207Q672 190 684 207V230H660Z"/>
+    </g>
+    <path d="M583 331V293Q600 270 617 293V331Z" fill="#201b39" stroke="#ddc9ff" stroke-width="3"/>
+    <circle cx="612" cy="310" r="3" fill="#ffd978"/>
+  </g>
+  <g fill="#372f55" stroke="#8c7bb6" stroke-width="2">
+    <path d="M273 337V292L310 263L347 292V337Z"/>
+    <path d="M831 333V278L876 242L921 278V333Z"/>
+    <path d="M1001 337V302L1034 275L1067 302V337Z"/>
+  </g>
+  <g fill="#f2b85c">
+    <rect x="304" y="302" width="12" height="18" rx="6"/>
+    <rect x="870" y="294" width="12" height="18" rx="6"/>
+    <rect x="1029" y="310" width="10" height="15" rx="5"/>
+  </g>
+  <path d="M0 397H1200" stroke="#a48bcf" stroke-opacity="0.45"/>
+</svg>

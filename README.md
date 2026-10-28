@@ -1,36 +1,116 @@
 # 🏰 The Arcane Tower Adventure
 
-A fantasy text-based adventure game built with Python. Players navigate a mysterious tower, solve environmental puzzles, and gather magical artifacts to face a powerful sorcerer.
+<p align="center">
+  <img src="assets/arcane-tower.svg" alt="An enchanted tower beneath a starry night sky" width="720">
+</p>
 
-## 📖 Game Overview
-You are a wizard apprentice who has entered the prestigious Arcane Tower, only to discover that the evil sorcerer Malachar has seized control. Your mission is to navigate the tower's various chambers, find the hidden artifacts, and confront Malachar in the Throne Room.
+<p align="center">
+  <strong>A command-line fantasy adventure built with Python</strong><br>
+  Explore the tower. Recover its artifacts. Face Malachar.
+</p>
 
-## 🎯 Objectives & Gameplay
-*   **Primary Goal:** Collect all **seven** legendary magical artifacts hidden throughout the tower.
-*   **Navigation:** Move freely between rooms (North, South, East, West).
-*   **Interaction:** Locate and "Get" items from specific rooms.
-*   **Status:** Keep track of your current location and your inventory at any time.
+---
 
-## 🏆 Win/Loss Conditions
-*   **Victory:** You win by reaching the **Throne Room** while carrying all seven artifacts in your inventory. This triggers the final victory sequence.
-*   **Defeat:** If you enter the **Throne Room** without all seven artifacts, Malachar will defeat you instantly. 
+## 📖 The story
 
-## 🛠 Features
-- **Dynamic Room Mapping:** Uses nested dictionaries to manage world exploration.
-- **Inventory System:** Tracks items collected and updates the "Visible Item" status in real-time.
-- **Input Validation:** Handles invalid directions and incorrect item names gracefully.
-- **Modular Code:** Built using independent functions for movement, status updates, and item collection to ensure clean, readable code.
+You are a wizard apprentice entering the prestigious Arcane Tower. The evil
+sorcerer Malachar has seized control, and seven legendary artifacts are hidden
+throughout its chambers. Explore the tower, gather the complete collection, and
+challenge Malachar in the Throne Room.
 
-## 🚀 How to Run
-1. Ensure you have Python installed on your computer.
-2. Download the `TextBasedGame.py` file.
-3. Open your terminal or command prompt.
-4. Navigate to the folder and run:
-   ```bash
-   python TextBasedGame.py
+## ✨ Features
 
-🎓 Learning Milestones
- Dictionary manipulation and data structures.
- String parsing and user input handling.
- Implementing game loops and state management.
- Clean code practices and functional programming.
+- 🗺️ **Room-based exploration** across nine connected locations.
+- 🧙 **Seven collectible artifacts** with live inventory and progress updates.
+- ⌨️ **Case-insensitive commands** for a forgiving, easy-to-use interface.
+- 🔐 **A key-and-lock puzzle:** find the Silver Key in the Dungeon to unlock the
+  route to the Throne Room.
+- 🏆 **Two possible endings:** win with all seven artifacts, or face defeat if
+  you enter the Throne Room unprepared.
+- 🧪 **Automated tests** for commands, item collection, the locked route, and
+  both endings.
+
+## 🚀 Get started
+
+### Requirements
+
+- Python 3.11 or newer
+- No third-party packages
+
+### Run the game
+
+Clone or download the repository, open a terminal in the project directory, and
+run:
+
+```bash
+python TextBasedGame.py
+```
+
+## 🎮 How to play
+
+Commands are case-insensitive. Use `go` to move, `get` to collect the item in
+your current room, and `status` to check your progress.
+
+| Command | What it does |
+| --- | --- |
+| `go [direction]` | Move north, south, east, or west |
+| `get [item]` | Pick up the visible item in the room |
+| `status` | Show your room, inventory, and artifact count |
+| `help` | Display the available commands |
+| `exit` | Quit the game |
+
+Example:
+
+```text
+go north
+get ancient spellbook
+status
+```
+
+### 🏆 The goal
+
+Collect all seven artifacts before entering the Throne Room. The Silver Key is
+in the Dungeon and is required to unlock its door. The key opens the way, but
+you still need the complete artifact collection to defeat Malachar.
+
+### 🧿 Artifact locations
+
+| Room | Artifact |
+| --- | --- |
+| Library | Ancient Spellbook |
+| Alchemy Lab | Magic Potion |
+| Observatory | Star Chart |
+| Garden | Enchanted Flower |
+| Armory | Crystal Sword |
+| Dungeon | Silver Key |
+| Secret Chamber | Mystic Amulet |
+
+The Throne Room is the final destination; it contains no artifact.
+
+## 🧪 Run the tests
+
+The test suite uses Python's built-in `unittest` framework and requires no
+additional dependencies:
+
+```bash
+python -m unittest -v
+```
+
+Tests simulate player input, so they run without manual interaction. They cover
+uppercase commands, inventory display, item collection, the locked Throne Room,
+and both game endings.
+
+## 📁 Project structure
+
+```text
+TextBasedGame.py          Game implementation
+test_game.py              Automated unit and end-to-end tests
+assets/arcane-tower.svg   Original README banner illustration
+README.md                 Project documentation
+```
+
+## 🛠️ Built with
+
+- **Python** — game logic and command-line interface
+- **unittest** — automated testing
+- **SVG** — original, locally stored README artwork
